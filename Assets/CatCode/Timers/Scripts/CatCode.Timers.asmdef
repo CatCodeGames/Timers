@@ -1,3 +1,16 @@
 {
-	"name": "CatCode.Timers"
+    "name": "CatCode.Timers",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a1953a3df6819694e8bdcd9e3f597d95"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

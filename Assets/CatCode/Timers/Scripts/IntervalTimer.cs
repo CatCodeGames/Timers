@@ -2,7 +2,7 @@
 
 
 namespace CatCode.Timers
-{    
+{
     public sealed partial class IntervalTimer
     {
         private readonly UpdateMode _updateMode;
@@ -23,7 +23,9 @@ namespace CatCode.Timers
         public float ElapsedRatio
             => ElapsedTime / Interval;
 
-        public IntervalTimer(float interval, Action callback, UpdateMode updateMode = UpdateMode.NormalUpdate, bool unscaledTime = false, bool multiInvokeOnUpdate = false)
+        public bool IsActive => _isActive;
+
+        public IntervalTimer(float interval, Action callback, UpdateMode updateMode = UpdateMode.RegularUpdate, bool unscaledTime = false, bool multiInvokeOnUpdate = false)
         {
             Interval = interval;
             Callback = callback;
@@ -39,7 +41,7 @@ namespace CatCode.Timers
                 return;
             _isActive = true;
             if (!_inSystem)
-                TimerManager.Register(this, _updateMode, _unscaledTime);
+                TimerSystem.RegisterTimer(this, _updateMode, _unscaledTime);
         }
 
         public void Stop()
@@ -48,7 +50,15 @@ namespace CatCode.Timers
                 return;
             _isActive = false;
             if (_inSystem)
-                TimerManager.ScheduleCleaning(_updateMode, _unscaledTime);
+                TimerSystem.ScheduleCleaningSystem(_updateMode, _unscaledTime);
+        }
+
+        public void Reset()
+        {
+            ElapsedTime = 0f;
+            CompletedLoops = 0;
+
+
         }
 
         public IntervalTimer SetInterval(float interval)

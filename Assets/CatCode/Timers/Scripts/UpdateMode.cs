@@ -2,7 +2,7 @@
 {
     public enum UpdateMode
     {
-        NormalUpdate,
+        RegularUpdate,
         LateUpdate,
         FixedUpdate,
     }
