@@ -11,8 +11,7 @@ namespace CatCode.Timers
 
         private void Awake()
         {
-            _timer = new IntervalTimer(_interval, OnElapsed, UpdateMode.RegularUpdate, multiInvokeOnUpdate: true)
-                .SetLoops(_loops);
+            _timer = new IntervalTimer(_interval, OnElapsed, UpdateMode.RegularUpdate, false, _loops, true);
         }
 
         private void OnEnable()
@@ -34,7 +33,7 @@ namespace CatCode.Timers
         {
             if (_reset)
                 _timer.CompletedLoops = 0;
-            Debug.Log($"{Time.time} - {_timer.ElapsedTime}");
+            Debug.Log($"{Time.time}");
         }
     }
 }

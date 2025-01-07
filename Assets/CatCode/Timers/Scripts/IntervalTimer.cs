@@ -23,11 +23,16 @@ namespace CatCode.Timers
         public float ElapsedRatio
             => ElapsedTime / Interval;
 
+        public bool UnscaledTime => _unscaledTime;
+        public UpdateMode UpdateMode => _updateMode;
+
         public bool IsActive => _isActive;
 
-        public IntervalTimer(float interval, Action callback, UpdateMode updateMode = UpdateMode.RegularUpdate, bool unscaledTime = false, bool multiInvokeOnUpdate = false)
+        public IntervalTimer(float interval, Action callback, UpdateMode updateMode = UpdateMode.RegularUpdate, bool unscaledTime = false, int loops = -1, bool multiInvokeOnUpdate = false)
         {
             Interval = interval;
+            TotalLoops = loops;
+            TotalLoops = loops;
             Callback = callback;
             MultiInvokeOnUpdate = multiInvokeOnUpdate;
 
@@ -57,8 +62,6 @@ namespace CatCode.Timers
         {
             ElapsedTime = 0f;
             CompletedLoops = 0;
-
-
         }
 
         public IntervalTimer SetInterval(float interval)

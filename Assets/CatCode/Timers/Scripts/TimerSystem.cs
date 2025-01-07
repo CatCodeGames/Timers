@@ -35,10 +35,10 @@ namespace CatCode.Timers
         }
 
 
-        public static void RegisterTimer(IntervalTimer timerData, UpdateMode updateMode = UpdateMode.RegularUpdate, bool unscaled = false)
+        public static void RegisterTimer(IntervalTimer timer, UpdateMode updateMode = UpdateMode.RegularUpdate, bool unscaled = false)
         {
             var system = Get(updateMode, unscaled);
-            system.Add(timerData);
+            system.Add(timer);
         }
 
         public static void ScheduleCleaningSystem(UpdateMode updateMode = UpdateMode.RegularUpdate, bool unscaled = false)
