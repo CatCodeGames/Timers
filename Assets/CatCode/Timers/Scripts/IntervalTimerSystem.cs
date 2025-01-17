@@ -16,7 +16,7 @@ namespace CatCode.Timers
 
             public void Add(IntervalTimer timer)
             {
-                if (timer.TotalLoops > 0 && timer.CompletedLoops >= timer.TotalLoops)
+                if (timer.TotalLoops != -1 && timer.CompletedLoops >= timer.TotalLoops)
                     return;
                 timer._inSystem = true;
                 _timersToAdd.Add(timer);
