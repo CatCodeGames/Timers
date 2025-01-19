@@ -11,11 +11,12 @@ namespace CatCode.Timers
 
         private void Awake()
         {
-            _timer = new IntervalTimer(_interval, OnElapsed, UpdateMode.RegularUpdate, false, _loops, true);
+            _timer = new IntervalTimer(_interval, OnElapsed, _loops, UpdateMode.RegularUpdate, TimeMode.Scaled, true);
         }
 
         private void OnEnable()
         {
+            var timer = InteralTimerPool.Get(_interval, OnElapsed, _loops, UpdateMode.RegularUpdate, TimeMode.Scaled, false);
             _timer.Reset();
             _timer.Start();
             _timer.Stop();
@@ -26,7 +27,7 @@ namespace CatCode.Timers
 
         private void OnDisable()
         {
-            _timer.Stop();
+            InteralTimerPool.Release(_timer);
         }
 
         private void OnElapsed()

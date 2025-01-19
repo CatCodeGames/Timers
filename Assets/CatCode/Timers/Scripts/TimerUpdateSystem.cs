@@ -7,7 +7,7 @@ namespace CatCode.Timers
 {
     public sealed partial class IntervalTimer
     {
-        public sealed class IntervalTimerSystem
+        public sealed class TimerUpdateSystem
         {
             private bool _isActive = false;
             private bool _removalScheduled = false;

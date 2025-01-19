@@ -6,7 +6,7 @@ namespace CatCode.Timers
     public sealed partial class IntervalTimer
     {
         private readonly UpdateMode _updateMode;
-        private readonly bool _unscaledTime;
+        private readonly TimeMode _timeMode;
 
         private bool _inSystem = false;
         private bool _isActive = false;
@@ -23,21 +23,24 @@ namespace CatCode.Timers
         public float ElapsedRatio
             => ElapsedTime / Interval;
 
-        public bool UnscaledTime => _unscaledTime;
         public UpdateMode UpdateMode => _updateMode;
-
+        public TimeMode TimeMode => _timeMode;
         public bool IsActive => _isActive;
 
-        public IntervalTimer(float interval, Action callback, UpdateMode updateMode = UpdateMode.RegularUpdate, bool unscaledTime = false, int loops = -1, bool multiInvokeOnUpdate = false)
+        public IntervalTimer(
+            float interval, Action callback, int loops = -1,
+            UpdateMode updateMode = UpdateMode.RegularUpdate,
+            TimeMode timeMode = TimeMode.Scaled,
+            bool multiInvokeOnUpdate = false)
         {
+            _updateMode = updateMode;
+            _timeMode = timeMode;
+
             Interval = interval;
             TotalLoops = loops;
             TotalLoops = loops;
             Callback = callback;
             MultiInvokeOnUpdate = multiInvokeOnUpdate;
-
-            _updateMode = updateMode;
-            _unscaledTime = unscaledTime;
         }
 
         public void Start()
@@ -46,7 +49,7 @@ namespace CatCode.Timers
                 return;
             _isActive = true;
             if (!_inSystem)
-                TimerSystem.RegisterTimer(this, _updateMode, _unscaledTime);
+                TimerSystem.RegisterTimer(this, _updateMode, _timeMode);
         }
 
         public void Stop()
@@ -55,7 +58,7 @@ namespace CatCode.Timers
                 return;
             _isActive = false;
             if (_inSystem)
-                TimerSystem.ScheduleCleaningSystem(_updateMode, _unscaledTime);
+                TimerSystem.ScheduleCleaningSystem(_updateMode, _timeMode);
         }
 
         public void Reset()
@@ -79,6 +82,12 @@ namespace CatCode.Timers
         public IntervalTimer SetLoops(int loops)
         {
             TotalLoops = loops;
+            return this;
+        }
+
+        public IntervalTimer SetMultiInvokeOnUpdate(bool value)
+        {
+            MultiInvokeOnUpdate = value;
             return this;
         }
     }

@@ -1,56 +1,59 @@
+using System;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 
 
 namespace CatCode.Timers
 {
+
     public static class TimerSystem
     {
-        private static IntervalTimer.IntervalTimerSystem[,] _systems;
+        private static IntervalTimer.TimerUpdateSystem[,] _systems;
 
         public const int UpdateModeCount = 3;
         public const int TimeModeCount = 2;
 
-        public const int RegularUpdateIndex = 0;
-        public const int FixedUpdateIndex = 1;
-        public const int LateUpdateIndex = 2;
+        public static readonly int RegularUpdateIndex;
+        public static readonly int FixedUpdateIndex;
+        public static readonly int LateUpdateIndex;
 
-        public const int UnscaledTimeIndex = 0;
-        public const int ScaledTimeIndex = 1;
+        public static readonly int UnscaledTimeIndex;
+        public static readonly int ScaledTimeIndex;
 
         static TimerSystem()
         {
-            _systems = new IntervalTimer.IntervalTimerSystem[UpdateModeCount, TimeModeCount];
+            RegularUpdateIndex = (int)UpdateMode.RegularUpdate;
+            FixedUpdateIndex = (int)UpdateMode.FixedUpdate;
+            LateUpdateIndex = (int)UpdateMode.LateUpdate;
+
+            ScaledTimeIndex = (int)TimeMode.Scaled;
+            UnscaledTimeIndex = (int)TimeMode.Unscaled;
+
+            _systems = new IntervalTimer.TimerUpdateSystem[UpdateModeCount, TimeModeCount];
             for (int i = 0; i < UpdateModeCount; i++)
                 for (int j = 0; j < TimeModeCount; j++)
-                    _systems[i, j] = new IntervalTimer.IntervalTimerSystem();
+                    _systems[i, j] = new IntervalTimer.TimerUpdateSystem();
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
         private static void Initializer()
         {
-            PlayerLoopUtils.AddLoopSystem<IntervalTimer.IntervalTimerSystem>(new[] { typeof(Update) }, Update);
-            PlayerLoopUtils.AddLoopSystem<IntervalTimer.IntervalTimerSystem>(new[] { typeof(FixedUpdate) }, FixedUpdate);
-            PlayerLoopUtils.AddLoopSystem<IntervalTimer.IntervalTimerSystem>(new[] { typeof(PreLateUpdate) }, LateUpdate);
+            PlayerLoopUtils.AddLoopSystem<IntervalTimer.TimerUpdateSystem>(new[] { typeof(Update) }, Update);
+            PlayerLoopUtils.AddLoopSystem<IntervalTimer.TimerUpdateSystem>(new[] { typeof(FixedUpdate) }, FixedUpdate);
+            PlayerLoopUtils.AddLoopSystem<IntervalTimer.TimerUpdateSystem>(new[] { typeof(PreLateUpdate) }, LateUpdate);
         }
 
 
-        public static void RegisterTimer(IntervalTimer timer, UpdateMode updateMode = UpdateMode.RegularUpdate, bool unscaled = false)
+        public static void RegisterTimer(IntervalTimer timer, UpdateMode updateMode, TimeMode timeMode)
         {
-            var system = Get(updateMode, unscaled);
+            var system = Get(updateMode, timeMode);
             system.Add(timer);
         }
 
-        public static void ScheduleCleaningSystem(UpdateMode updateMode = UpdateMode.RegularUpdate, bool unscaled = false)
+        public static void ScheduleCleaningSystem(UpdateMode updateMode, TimeMode timeMode)
         {
-            var system = Get(updateMode, unscaled);
+            var system = Get(updateMode, timeMode);
             system.ScheduleInactiveTimersRemoval();
-        }
-
-        private static void FixedUpdate()
-        {
-            _systems[FixedUpdateIndex, ScaledTimeIndex].Update(Time.fixedDeltaTime);
-            _systems[FixedUpdateIndex, UnscaledTimeIndex].Update(Time.fixedUnscaledDeltaTime);
         }
 
         private static void Update()
@@ -64,18 +67,30 @@ namespace CatCode.Timers
             _systems[LateUpdateIndex, ScaledTimeIndex].Update(Time.deltaTime);
             _systems[LateUpdateIndex, UnscaledTimeIndex].Update(Time.unscaledDeltaTime);
         }
-
-        private static IntervalTimer.IntervalTimerSystem Get(UpdateMode mode, bool unscaled)
+        private static void FixedUpdate()
         {
-            var updateModeIndex = RegularUpdateIndex;
-            switch (mode)
-            {
-                case UpdateMode.RegularUpdate: updateModeIndex = RegularUpdateIndex; break;
-                case UpdateMode.LateUpdate: updateModeIndex = LateUpdateIndex; break;
-                case UpdateMode.FixedUpdate: updateModeIndex = FixedUpdateIndex; break;
-            }
-            var timeScaleIndex = unscaled ? UnscaledTimeIndex : ScaledTimeIndex;
-            return _systems[updateModeIndex, timeScaleIndex];
+            _systems[FixedUpdateIndex, ScaledTimeIndex].Update(Time.fixedDeltaTime);
+            _systems[FixedUpdateIndex, UnscaledTimeIndex].Update(Time.fixedUnscaledDeltaTime);
         }
+
+        private static IntervalTimer.TimerUpdateSystem Get(UpdateMode updateMode, TimeMode timeMode)
+        {
+            var updateModeIndex = UpdateModeToIndex(updateMode);
+            var timeModeIndex = TimeModeToIndex(timeMode);
+            return _systems[updateModeIndex, timeModeIndex];
+        }
+
+
+        public static int UpdateModeToIndex(UpdateMode mode)
+            => (int)mode;
+
+        public static int TimeModeToIndex(TimeMode mode)
+            => (int)mode;
+
+        public static UpdateMode IndexToUpdateMode(int index)
+            => (UpdateMode)index;
+
+        public static TimeMode IndexToTimeMode(int index)
+            => (TimeMode)index;
     }
 }
