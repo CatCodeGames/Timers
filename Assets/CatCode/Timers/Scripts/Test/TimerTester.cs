@@ -16,7 +16,7 @@ namespace CatCode.Timers
 
         private void OnEnable()
         {
-            var timer = InteralTimerPool.Get(_interval, OnElapsed, _loops, UpdateMode.RegularUpdate, TimeMode.Scaled, false);
+            var timer = IntervalTimerPool.Get(_interval, OnElapsed, _loops, UpdateMode.RegularUpdate, TimeMode.Scaled, false);
             _timer.Reset();
             _timer.Start();
             _timer.Stop();
@@ -27,7 +27,7 @@ namespace CatCode.Timers
 
         private void OnDisable()
         {
-            InteralTimerPool.Release(_timer);
+            IntervalTimerPool.Release(_timer);
         }
 
         private void OnElapsed()

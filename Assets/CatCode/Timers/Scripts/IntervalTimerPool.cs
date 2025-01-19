@@ -3,11 +3,11 @@ using UnityEngine.Pool;
 
 namespace CatCode.Timers
 {
-    public static class InteralTimerPool
+    public static class IntervalTimerPool
     {
         private static ObjectPool<IntervalTimer>[,] _pools;
 
-        static InteralTimerPool()
+        static IntervalTimerPool()
         {
             _pools = new ObjectPool<IntervalTimer>[TimerSystem.UpdateModeCount, TimerSystem.TimeModeCount];
             for (int i = 0; i < TimerSystem.UpdateModeCount; i++)
